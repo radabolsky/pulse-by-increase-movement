@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 import argparse
 from graph import get_graph
+import motion_magnification as mm
+import mediapy as media
 
 
 # Ввод данных в командной строке
@@ -12,11 +14,25 @@ parser.add_argument('in_path', type=str, help='Video for processing')
 args = parser.parse_args()
 
 
-#Место для кода по усилению видео
+# Параметры для усиления видео
+magnification_factor = 4
+fl = .04
+fh = .4
+fs = 1
+attenuate_other_frequencies=True
+pyr_type = "octave"
+sigma = 0
+temporal_filter = mm.difference_of_iir
+scale_video = .8
+
+# Производство усиленного видео
+video_f = mm.load_video(args.in_path)
+amplified_video = mm.phase_amplify(video_f, magnification_factor, fl, fh, fs, attenuate_other_frequencies=attenuate_other_frequencies, pyramid_type=pyr_type, sigma=sigma, temporal_filter=temporal_filter)
+media.write_video('amplified_1.mp4', amplified_video)
 
 
 # ЗАМЕНИТЬ args.in_path на путь к усиленному видео
-cap = cv2.VideoCapture(args.in_path)
+cap = cv2.VideoCapture('amplified_1.mp4')
 
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades+"haarcascade_frontalface_default.xml")
 
